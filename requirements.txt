@@ -1,0 +1,10 @@
+Flask==3.0.2
+gunicorn==23.0.0
+pandas==2.0.1
+prophet==1.1.6
+numpy==1.21.5
+tensorflow==2.13.0
+tensorflow-estimator==2.13.0
+tensorflow-intel==2.13.0
+tensorflow-io-gcs-filesystem==0.31.0
+

@@ -2,8 +2,8 @@ from flask import Flask, request, jsonify
 import pandas as pd
 from prophet import Prophet
 from statsmodels.tsa.arima.model import ARIMA
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import LSTM, Dense
 import numpy as np
 
 
@@ -44,14 +44,14 @@ def forecast_arima(language, periods=24):
     return [{"ds": str(date), "yhat": pred} for date, pred in zip(future_dates, forecast)]
 
 
-def prepare_lstm_data(data, look_back=12):
+# def prepare_lstm_data(data, look_back=12):
     X, y = [], []
     for i in range(len(data) - look_back):
         X.append(data[i:(i + look_back)])
         y.append(data[i + look_back])
     return np.array(X), np.array(y)
 
-def forecast_lstm(language, periods=24):
+# def forecast_lstm(language, periods=24):
     if language not in df.columns:
         return {"error": "Language not found in dataset"}
     
@@ -91,8 +91,8 @@ def get_forecast():
     
     if model_type == "arima":
         forecast_data = forecast_arima(language)
-    elif model_type == "lstm":
-        forecast_data = forecast_lstm(language)
+    # elif model_type == "lstm":
+    #     forecast_data = forecast_lstm(language)
     else:
         forecast_data = forecast_language(language)
 

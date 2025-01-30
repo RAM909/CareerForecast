@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pandas as pd
 from prophet import Prophet
 from statsmodels.tsa.arima.model import ARIMA
@@ -6,8 +7,8 @@ from statsmodels.tsa.arima.model import ARIMA
 # from tensorflow.keras.layers import LSTM, Dense
 import numpy as np
 
-
 app = Flask(__name__)
+CORS(app)  # Enables CORS for all origins
 
 # Load Data
 df = pd.read_csv("Finaldatset.csv", parse_dates=["date"], index_col="date")
@@ -17,8 +18,7 @@ def forecast_language(language, periods=24):
     if language not in df.columns:
         return {"error": "Language not found in dataset"}
     
-    data = df[["ds", language]].rename(columns={language: "y"})
-    data = data.dropna()
+    data = df[["ds", language]].rename(columns={language: "y"}).dropna()
     
     model = Prophet()
     model.fit(data)
@@ -28,7 +28,6 @@ def forecast_language(language, periods=24):
     
     result = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(periods)
     return result.to_dict(orient="records")
-
 
 def forecast_arima(language, periods=24):
     if language not in df.columns:
@@ -43,43 +42,6 @@ def forecast_arima(language, periods=24):
     
     return [{"ds": str(date), "yhat": pred} for date, pred in zip(future_dates, forecast)]
 
-
-# def prepare_lstm_data(data, look_back=12):
-    X, y = [], []
-    for i in range(len(data) - look_back):
-        X.append(data[i:(i + look_back)])
-        y.append(data[i + look_back])
-    return np.array(X), np.array(y)
-
-# def forecast_lstm(language, periods=24):
-    if language not in df.columns:
-        return {"error": "Language not found in dataset"}
-    
-    data = df[language].dropna().values.reshape(-1, 1)
-    look_back = 12
-    X, y = prepare_lstm_data(data, look_back)
-
-    model = Sequential([
-        LSTM(50, activation='relu', return_sequences=True, input_shape=(look_back, 1)),
-        LSTM(50, activation='relu'),
-        Dense(1)
-    ])
-    model.compile(optimizer='adam', loss='mse')
-    model.fit(X, y, epochs=50, batch_size=8, verbose=0)
-
-    predictions = []
-    input_seq = data[-look_back:].reshape(1, look_back, 1)
-    for _ in range(periods):
-        pred = model.predict(input_seq, verbose=0)[0][0]
-        predictions.append(pred)
-        input_seq = np.roll(input_seq, -1)
-        input_seq[0, -1, 0] = pred
-    
-    future_dates = pd.date_range(start=df['ds'].iloc[-1], periods=periods+1, freq='M')[1:]
-    return [{"ds": str(date), "yhat": pred} for date, pred in zip(future_dates, predictions)]
-
-
-
 @app.route("/forecast", methods=["POST"])
 def get_forecast():
     request_data = request.get_json()
@@ -91,8 +53,6 @@ def get_forecast():
     
     if model_type == "arima":
         forecast_data = forecast_arima(language)
-    # elif model_type == "lstm":
-    #     forecast_data = forecast_lstm(language)
     else:
         forecast_data = forecast_language(language)
 

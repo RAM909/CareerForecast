@@ -15,10 +15,10 @@ app = Flask(__name__)
 CORS(app)  
 load_dotenv()
 
-LINKEDIN_USERNAME = os.getenv('LINKEDIN_USERNAME')
-LINKEDIN_PASSWORD = os.getenv('LINKEDIN_PASSWORD')
+# LINKEDIN_USERNAME = os.getenv('LINKEDIN_USERNAME')
+# LINKEDIN_PASSWORD = os.getenv('LINKEDIN_PASSWORD')
 
-api = Linkedin(LINKEDIN_USERNAME, LINKEDIN_PASSWORD)
+api = Linkedin("arcademeet@gmail.com", "7_#^jf::Z:(e,7n")
 
 # Load Data
 df = pd.read_csv("Finaldatset.csv", parse_dates=["date"], index_col="date")

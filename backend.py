@@ -8,12 +8,15 @@ from statsmodels.tsa.arima.model import ARIMA
 import numpy as np
 from linkedin_api import Linkedin
 import logging
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
-CORS(app)  # Enables CORS for all origins
+CORS(app)  
+load_dotenv()
 
-LINKEDIN_USERNAME = "arcademeet@gmail.com"
-LINKEDIN_PASSWORD = "7_#^jf::Z:(e,7n"
+LINKEDIN_USERNAME = os.getenv('LINKEDIN_USERNAME')
+LINKEDIN_PASSWORD = os.getenv('LINKEDIN_PASSWORD')
 
 api = Linkedin(LINKEDIN_USERNAME, LINKEDIN_PASSWORD)
 
